@@ -13,15 +13,20 @@ public class PiqleBot extends Robot {
 	}
 
 	public void onScannedRobot(ScannedRobotEvent e) {
-		this.fire(3);
+		attack(e);
 	}
-	
+
 	private void scanAround() {
-		this.turnGunLeft(90);
+		turnGunLeft(30);
 	}
-	
+
 	private void moveAround() {
-		this.ahead(30);
-		this.turnLeft(30);
+		ahead(45);
+		turnLeft(45);
 	}
+
+	private void attack(ScannedRobotEvent e) {
+		fire(3);
+	}
+
 }
