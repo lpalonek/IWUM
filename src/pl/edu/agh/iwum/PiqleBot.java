@@ -1,5 +1,9 @@
 package pl.edu.agh.iwum;
 
+import pl.edu.agh.iwum.actions.FireBullet;
+import pl.edu.agh.iwum.actions.GunTurn;
+import pl.edu.agh.iwum.actions.MoveAhead;
+import pl.edu.agh.iwum.actions.Turn;
 import robocode.Robot;
 import robocode.ScannedRobotEvent;
 
@@ -13,20 +17,21 @@ public class PiqleBot extends Robot {
 	}
 
 	public void onScannedRobot(ScannedRobotEvent e) {
+		stop();
 		attack(e);
 	}
 
 	private void scanAround() {
-		turnGunLeft(30);
+		GunTurn gunTurn = new GunTurn(360).execute(this);
 	}
 
 	private void moveAround() {
-		ahead(45);
-		turnLeft(45);
+		MoveAhead moveAhead = new MoveAhead(45).execute(this);
+		Turn turn = new Turn(45).execute(this);
 	}
 
 	private void attack(ScannedRobotEvent e) {
-		fire(3);
+		FireBullet fireBullet = new FireBullet(3).execute(this);
 	}
 
 }
