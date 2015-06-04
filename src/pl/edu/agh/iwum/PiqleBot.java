@@ -1,5 +1,6 @@
 package pl.edu.agh.iwum;
 
+import java.awt.Color;
 import java.util.Random;
 
 import pl.edu.agh.iwum.actions.FireBullet;
@@ -15,6 +16,7 @@ public class PiqleBot extends Robot {
 	private Random random = new Random();
 
 	public void run() {
+		setAllColors(Color.ORANGE);
 		while (true) {
 			scanAround();
 			moveAround();
@@ -46,8 +48,7 @@ public class PiqleBot extends Robot {
 	}
 
 	private void position90DegToBullet(HitByBulletEvent event) {
-		double bulletHeading = event.getHeading();
-		double escapeAngle = bulletHeading + (random.nextBoolean() ? 90 : -90);
+		double escapeAngle = event.getBearing() + (random.nextBoolean() ? 90 : -90);
 		double angleToRotate = escapeAngle - this.getHeading();
 		Turn position90DegToBullet = new Turn(angleToRotate).execute(this);
 	}
