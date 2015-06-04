@@ -17,7 +17,6 @@ public class PiqleBot extends Robot {
 	}
 
 	public void onScannedRobot(ScannedRobotEvent e) {
-		stop();
 		attack(e);
 	}
 
