@@ -1,5 +1,6 @@
 package pl.edu.agh.iwum;
 
+import environment.*;
 import pl.edu.agh.iwum.actions.BotAction;
 import pl.edu.agh.iwum.actions.FireBullet;
 import pl.edu.agh.iwum.actions.GunTurn;
@@ -8,12 +9,8 @@ import pl.edu.agh.iwum.actions.MoveBack;
 import pl.edu.agh.iwum.actions.RadarTurn;
 import pl.edu.agh.iwum.actions.Turn;
 import pl.edu.agh.iwum.actions.NoAction;
-import environment.AbstractEnvironmentSingle;
-import environment.ActionList;
-import environment.IAction;
-import environment.IState;
 
-public class RobocodeEnvironment extends AbstractEnvironmentSingle {
+public class RobocodeEnvironment implements IEnvironmentSingle {
 
 	private static final long serialVersionUID = 39129605484574612L;
 

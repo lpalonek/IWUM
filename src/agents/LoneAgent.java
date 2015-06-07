@@ -24,9 +24,7 @@ package agents;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
-import javax.swing.JFileChooser;
 
-import util.ExtensionFileFilter;
 import algorithms.ISelector;
 import environment.IEnvironment;
 import environment.IEnvironmentSingle;
@@ -93,38 +91,7 @@ public class LoneAgent extends AbstractAgent{
 	}// readAgent
 
 	/** Same as above, but the file name is not given.*/
-	public static IAgent readAgent(IEnvironment s) {
-	JFileChooser chooser=new JFileChooser();
-	chooser.setCurrentDirectory(new File(".")); 
-	String extension="agt";
-	File fichierALire; 
-	ObjectInputStream entree;
-	ExtensionFileFilter filter = new ExtensionFileFilter(); 
-	LoneAgent resultat=null; 
-	filter.addExtension(extension);  
-	filter.setDescription("Agent file"); 
-	chooser.setFileFilter(filter); 
-	int returnVal = chooser.showOpenDialog(null); 
-	if(returnVal == JFileChooser.APPROVE_OPTION) 
-	    { System.err.println("You choose to open this file: " 
-				 + chooser.getSelectedFile().getName()); 
-	    
-	    fichierALire=chooser.getSelectedFile(); 
-	    }
-	else 
-	    {
-		return null; 
-	
-	    }
-	try{
-	entree=new ObjectInputStream(new FileInputStream(fichierALire)); 
-	resultat=(LoneAgent)entree.readObject(); 
-	entree.close(); 
-	}
-	catch(Exception e){ System.err.println("Problem when reading agent file. "+e.getMessage()); }
-	resultat.currentState=((IEnvironmentSingle) s).defaultInitialState(); 
-	return resultat; 
-	}
+
 
 	
 	
