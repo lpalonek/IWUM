@@ -9,36 +9,66 @@ import robocode.ScannedRobotEvent;
 
 public class PiqleBot extends Robot {
 
-	private PiqleConfiguration configuration = PiqleConfiguration.getInstance();
+    private PiqleConfiguration configuration = PiqleConfiguration.getInstance();
 
-	public void run() {
-		setAllColors(Color.ORANGE);
-		configuration.getEnvironment().setBot(this);
-		play(10);
-	}
+    private double lastKnownPosition;
 
-	public BotState getState() {
-		return new BotState(configuration.getEnvironment(), this);
-	}
+    private double radarTurn;
 
-	@Override
-	public void onHitByBullet(HitByBulletEvent event) {
-		play(10);
-	}
+    public void run() {
+        setAllColors(Color.ORANGE);
+        configuration.getEnvironment().setBot(this);
+        radarTurn = 10;
+        while (true) {
+            turnRadarRight(radarTurn/2);
+            turnRadarLeft( radarTurn);
+            System.err.println(getRadarHeading());
+            turnRadarRight(radarTurn/2);
+            if(radarTurn <= 360) {
+                radarTurn *= 2;
+            }
 
-	@Override
-	public void onHitWall(HitWallEvent event) {
-		play(10);
-	}
+        }
+    }
 
-	@Override
-	public void onScannedRobot(ScannedRobotEvent event) {
-		play(10);
-	}
+    public BotState getState() {
+        return new BotState(configuration.getEnvironment(), this);
+    }
 
-	private void play(int numberOfActions) {
-		configuration.getReferee().setMaxIter(numberOfActions);
-		configuration.getReferee().episode(getState());
-	}
+    @Override
+    public void onHitByBullet(HitByBulletEvent event) {
+        play(10);
+    }
+
+    @Override
+    public void onHitWall(HitWallEvent event) {
+        play(10);
+    }
+
+    @Override
+    public void onScannedRobot(ScannedRobotEvent event) {
+        radarTurn = 10;
+        lastKnownPosition = getRadarHeading();
+
+        turnGunToSpecificHeading(lastKnownPosition);
+        System.err.println("Radar base heading "+ getRadarHeading());
+        fire(1);
+    }
+
+    private void play(int numberOfActions) {
+        configuration.getReferee().setMaxIter(numberOfActions);
+        configuration.getReferee().episode(getState());
+    }
+
+    private void turnGunToSpecificHeading(double heading) {
+        double currentGunHeading = getGunHeading();
+        double difference = currentGunHeading - heading;
+        if (difference > 0) {
+            turnLeft(Math.abs(difference));
+        } else {
+            turnRight(Math.abs(difference));
+        }
+        System.err.println("difference " + Math.abs(difference));
+    }
 
 }

@@ -39,7 +39,7 @@ public class OnePlayerReferee {
     /**
      * The player
      */
-    private IAgent joueur;
+    private IAgent player;
 
     /**
      * who won ? (  )
@@ -99,9 +99,9 @@ public class OnePlayerReferee {
     }
 
     /** */
-    public OnePlayerReferee(IAgent joueur) {
-        this.joueur = joueur;
-        this.universe = (IEnvironmentSingle) this.joueur.getEnvironment();
+    public OnePlayerReferee(IAgent player) {
+        this.player = player;
+        this.universe = (IEnvironmentSingle) this.player.getEnvironment();
     }
 
     /**
@@ -121,22 +121,22 @@ public class OnePlayerReferee {
      * @return Length of episode
      */
     public int episode(IState initial) {
-        this.joueur.setInitialState(initial);
-        this.joueur.newEpisode();
+        this.player.setInitialState(initial);
+        this.player.newEpisode();
         this.winner = 0;
         totalReward = 0.0;
         // Initializing the graphical display if needed
-        if (verbosity) System.out.println("************\n" + "Starting State " + this.joueur.getCurrentState());
+        if (verbosity) System.out.println("************\n" + "Starting State " + this.player.getCurrentState());
 
         for (int i = 0; i < this.maxIter; i++) {
-            if (verbosity) System.out.println("************\nCurrent State  : " + this.joueur.getCurrentState());
-            IAction c = this.joueur.act();
-            totalReward += this.joueur.getLastReward();
+            if (verbosity) System.out.println("************\nCurrent State  : " + this.player.getCurrentState());
+            IAction c = this.player.act();
+            totalReward += this.player.getLastReward();
             if (verbosity) System.out.println("Action : " + c + " " + totalReward + " " + i);
-            if (verbosity) System.out.println("State Reached  : " + this.joueur.getCurrentState() + "\n************");
-            if (this.joueur.getCurrentState().isFinal()) {
-                //	System.out.println("# "+this.joueur.getEtatCourant());
-                this.winner = this.universe.whoWins(this.joueur.getCurrentState());
+            if (verbosity) System.out.println("State Reached  : " + this.player.getCurrentState() + "\n************");
+            if (this.player.getCurrentState().isFinal()) {
+                //	System.out.println("# "+this.player.getEtatCourant());
+                this.winner = this.universe.whoWins(this.player.getCurrentState());
                 if (verbosity)
                     System.err.println("end !");
                 return i + 1;
