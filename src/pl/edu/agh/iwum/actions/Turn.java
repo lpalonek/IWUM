@@ -6,12 +6,18 @@ public class Turn extends BotAction {
 
 	private static final long serialVersionUID = 9221742304979741354L;
 
-	public Turn(double turn) {
-		super(0, 0, 0, turn, 0, 0);
+	public Turn() {
+		super();
 	}
-	
+
+	public Turn(double turn) {
+		this();
+		this.turn = turn;
+	}
+
 	@Override
-	public Turn execute(Robot robot) {
+	public Turn execute(Robot robot, double turn) {
+		this.turn = turn;
 		robot.turnRight(turn);
 		return this;
 	}

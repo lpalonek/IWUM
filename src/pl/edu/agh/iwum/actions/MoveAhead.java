@@ -6,12 +6,18 @@ public class MoveAhead extends BotAction {
 
 	private static final long serialVersionUID = 143588101187122119L;
 
+	public MoveAhead() {
+		super();
+	}
+
 	public MoveAhead(double ahead) {
-		super(0, 0, 0, 0, ahead, 0);
+		this();
+		this.ahead = ahead;
 	}
 
 	@Override
-	public MoveAhead execute(Robot robot) {
+	public MoveAhead execute(Robot robot, double ahead) {
+		this.ahead = ahead;
 		robot.ahead(ahead);
 		return this;
 	}

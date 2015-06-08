@@ -7,12 +7,12 @@ public abstract class BotAction implements IAction {
 
 	private static final long serialVersionUID = -7207421949115364405L;
 
-	protected double firedBulletPower = 0;
-	protected double radarTurn = 0;
-	protected double gunTurn = 0;
-	protected double turn = 0;
-	protected double ahead = 0;
-	protected double back = 0;
+	protected double firedBulletPower;
+	protected double radarTurn;
+	protected double gunTurn;
+	protected double turn;
+	protected double ahead;
+	protected double back;
 
 	public BotAction(double firedBulletPower, double radarTurn, double gunTurn, double turn, double ahead, double back) {
 		this.firedBulletPower = firedBulletPower;
@@ -23,7 +23,11 @@ public abstract class BotAction implements IAction {
 		this.back = back;
 	}
 
-	public abstract BotAction execute(Robot robot);
+	public BotAction() {
+		this(0, 0, 0, 0, 0, 0);
+	}
+
+	public abstract BotAction execute(Robot robot, double argument);
 
 	@Override
 	public abstract Object copy();

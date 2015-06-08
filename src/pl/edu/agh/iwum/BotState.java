@@ -1,9 +1,9 @@
 package pl.edu.agh.iwum;
 
 import robocode.Robot;
+import robocode.ScannedRobotEvent;
 import environment.AbstractState;
 import environment.IEnvironment;
-import environment.IState;
 
 public class BotState extends AbstractState {
 
@@ -16,8 +16,18 @@ public class BotState extends AbstractState {
 	private double radarHeading = 0;
 	private double gunHeading = 0;
 
-	public BotState(IEnvironment ct, Robot bot) {
+	private double lastEnemyEnergy = 0;
+	private double lastEnemyDistance = 0;
+	private double lastEnemyHeading = 0;
+
+	private double reward = 0;
+
+	public BotState(IEnvironment ct) {
 		super(ct);
+	}
+
+	public BotState(IEnvironment ct, Robot bot) {
+		this(ct);
 		energy = bot.getEnergy();
 		x = bot.getX();
 		y = bot.getY();
@@ -26,12 +36,8 @@ public class BotState extends AbstractState {
 		gunHeading = bot.getGunHeading();
 	}
 
-	public BotState(IEnvironment ct) {
-		super(ct);
-	}
-
 	@Override
-	public IState copy() {
+	public BotState copy() {
 		BotState copyOfState = new BotState(getEnvironment());
 		copyOfState.energy = energy;
 		copyOfState.x = x;
@@ -39,17 +45,20 @@ public class BotState extends AbstractState {
 		copyOfState.heading = heading;
 		copyOfState.radarHeading = radarHeading;
 		copyOfState.gunHeading = gunHeading;
+		copyOfState.lastEnemyEnergy = lastEnemyEnergy;
+		copyOfState.lastEnemyDistance = lastEnemyDistance;
+		copyOfState.lastEnemyHeading = lastEnemyHeading;
 		return copyOfState;
 	}
 
 	@Override
 	public int nnCodingSize() {
-		return 6;
+		return 9;
 	}
 
 	@Override
 	public double[] nnCoding() {
-		return new double[] { energy, x, y, heading, radarHeading, gunHeading };
+		return new double[] { energy, x, y, heading, radarHeading, gunHeading, lastEnemyEnergy, lastEnemyDistance, lastEnemyHeading };
 	}
 
 	public double getEnergy() {
@@ -74,6 +83,38 @@ public class BotState extends AbstractState {
 
 	public double getGunHeading() {
 		return gunHeading;
+	}
+
+	public double getLastEnemyEnergy() {
+		return lastEnemyEnergy;
+	}
+
+	public double getLastEnemyDistance() {
+		return lastEnemyDistance;
+	}
+
+	public double getLastEnemyHeading() {
+		return lastEnemyHeading;
+	}
+
+	public void setLastEnemyInfo(ScannedRobotEvent event) {
+		this.lastEnemyEnergy = event.getEnergy();
+		this.lastEnemyDistance = event.getDistance();
+		this.lastEnemyHeading = event.getHeading();
+	}
+
+	public void addPenalty(double penalty) {
+		this.reward -= penalty;
+	}
+
+	public void addReward(double reward) {
+		this.reward += reward;
+	}
+
+	public double getRewardAndClearIt() {
+		double result = reward;
+		reward = 0;
+		return result;
 	}
 
 }

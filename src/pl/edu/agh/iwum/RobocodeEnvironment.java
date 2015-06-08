@@ -1,14 +1,17 @@
 package pl.edu.agh.iwum;
 
-import environment.*;
 import pl.edu.agh.iwum.actions.BotAction;
 import pl.edu.agh.iwum.actions.FireBullet;
 import pl.edu.agh.iwum.actions.GunTurn;
 import pl.edu.agh.iwum.actions.MoveAhead;
 import pl.edu.agh.iwum.actions.MoveBack;
+import pl.edu.agh.iwum.actions.NoAction;
 import pl.edu.agh.iwum.actions.RadarTurn;
 import pl.edu.agh.iwum.actions.Turn;
-import pl.edu.agh.iwum.actions.NoAction;
+import environment.ActionList;
+import environment.IAction;
+import environment.IEnvironmentSingle;
+import environment.IState;
 
 public class RobocodeEnvironment implements IEnvironmentSingle {
 
@@ -20,18 +23,12 @@ public class RobocodeEnvironment implements IEnvironmentSingle {
 	public ActionList getActionList(IState s) {
 		ActionList actionList = new ActionList(s);
 		actionList.add(new NoAction());
-		for (int i = 10; i <= 100; i += 10) {
-			actionList.add(new MoveAhead(i));
-			actionList.add(new MoveBack(i));
-		}
-		for (int i = -45; i <= 45; i += 2) {
-			actionList.add(new GunTurn(i));
-			actionList.add(new RadarTurn(i));
-			actionList.add(new Turn(i));
-		}
-		for (double i = 1; i <= 3; i += 0.1) {
-			actionList.add(new FireBullet(i));
-		}
+		actionList.add(new MoveAhead());
+		actionList.add(new MoveBack());
+		actionList.add(new GunTurn());
+		actionList.add(new RadarTurn());
+		actionList.add(new Turn());
+		actionList.add(new FireBullet());
 		return actionList;
 	}
 
@@ -39,7 +36,8 @@ public class RobocodeEnvironment implements IEnvironmentSingle {
 	public IState successorState(IState s, IAction a) {
 		BotState botState = (BotState) s;
 		BotAction action = (BotAction) a;
-		action.execute(bot);
+		double argument = Double.NaN; //TODO
+		action.execute(bot, argument);
 		return bot.getState();
 	}
 
@@ -54,19 +52,7 @@ public class RobocodeEnvironment implements IEnvironmentSingle {
 		BotState newState = (BotState) s1;
 		BotAction takenAction = (BotAction) a;
 
-		if (newState.getEnergy() <= 0) {
-			return -20.0;
-		}
-
-		if (newState.getEnergy() < previousState.getEnergy()) {
-			return -3.0;
-		}
-
-		if (newState.getEnergy() > previousState.getEnergy()) {
-			return 3.0;
-		}
-
-		return 0.1;
+		return previousState.getRewardAndClearIt();
 	}
 
 	@Override

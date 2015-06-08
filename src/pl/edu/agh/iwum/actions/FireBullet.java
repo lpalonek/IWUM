@@ -6,12 +6,18 @@ public class FireBullet extends BotAction {
 
 	private static final long serialVersionUID = -6339379386608867531L;
 
+	public FireBullet() {
+		super();
+	}
+
 	public FireBullet(double firedBulletPower) {
-		super(firedBulletPower, 0, 0, 0, 0, 0);
+		this();
+		this.firedBulletPower = firedBulletPower;
 	}
 
 	@Override
-	public FireBullet execute(Robot robot) {
+	public FireBullet execute(Robot robot, double firedBulletPower) {
+		this.firedBulletPower = firedBulletPower;
 		robot.fireBullet(firedBulletPower);
 		return this;
 	}

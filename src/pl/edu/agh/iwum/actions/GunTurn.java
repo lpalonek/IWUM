@@ -6,12 +6,18 @@ public class GunTurn extends BotAction {
 
 	private static final long serialVersionUID = -2548342872511312512L;
 
+	public GunTurn() {
+		super();
+	}
+
 	public GunTurn(double gunTurn) {
-		super(0, 0, gunTurn, 0, 0, 0);
+		this();
+		this.gunTurn = gunTurn;
 	}
 
 	@Override
-	public GunTurn execute(Robot robot) {
+	public GunTurn execute(Robot robot, double gunTurn) {
+		this.gunTurn = gunTurn;
 		robot.turnGunRight(gunTurn);
 		return this;
 	}

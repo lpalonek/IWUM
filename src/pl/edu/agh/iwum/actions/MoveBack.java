@@ -6,12 +6,18 @@ public class MoveBack extends BotAction {
 
 	private static final long serialVersionUID = -6354281943466920179L;
 
+	public MoveBack() {
+		super();
+	}
+
 	public MoveBack(double back) {
-		super(0, 0, 0, 0, 0, back);
+		this();
+		this.back = back;
 	}
 
 	@Override
-	public MoveBack execute(Robot robot) {
+	public MoveBack execute(Robot robot, double back) {
+		this.back = back;
 		robot.back(back);
 		return this;
 	}
