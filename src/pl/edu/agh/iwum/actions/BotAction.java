@@ -27,6 +27,12 @@ public abstract class BotAction implements IAction {
 		this(0, 0, 0, 0, 0, 0);
 	}
 
+	/**
+	 * 
+	 * @param robot
+	 * @param argument Number in range [0.0, 1.0]
+	 * @return
+	 */
 	public abstract BotAction execute(Robot robot, double argument);
 
 	@Override

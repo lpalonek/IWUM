@@ -16,8 +16,8 @@ public class GunTurn extends BotAction {
 	}
 
 	@Override
-	public GunTurn execute(Robot robot, double gunTurn) {
-		this.gunTurn = gunTurn;
+	public GunTurn execute(Robot robot, double argument) {
+		gunTurn = -180 + argument * 360;
 		robot.turnGunRight(gunTurn);
 		return this;
 	}

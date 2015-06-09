@@ -3,40 +3,29 @@ package pl.edu.agh.iwum;
 import java.awt.Color;
 
 import robocode.BulletHitEvent;
+import robocode.BulletMissedEvent;
 import robocode.HitByBulletEvent;
 import robocode.HitWallEvent;
 import robocode.Robot;
+import robocode.RoundEndedEvent;
 import robocode.ScannedRobotEvent;
 
 public class PiqleBot extends Robot {
 
 	private PiqleConfiguration configuration = PiqleConfiguration.getInstance();
-
 	private BotState state;
-
-	private double lastKnownPosition;
-
-	private double radarTurn;
 
 	public void run() {
 		state = new BotState(configuration.getEnvironment(), this);
 		setAllColors(Color.ORANGE);
 		configuration.getEnvironment().setBot(this);
-		radarTurn = 10;
 		while (true) {
-			turnRadarRight(radarTurn / 2);
-			turnRadarLeft(radarTurn);
-			System.err.println(getRadarHeading());
-			turnRadarRight(radarTurn / 2);
-			if (radarTurn <= 360) {
-				radarTurn *= 2;
-			}
-
+			play(1);
 		}
 	}
 
 	public BotState getState() {
-		return state.copy(); // TODO: do I need to copy() ?
+		return state;
 	}
 
 	private void updateState() {
@@ -45,45 +34,45 @@ public class PiqleBot extends Robot {
 
 	@Override
 	public void onHitByBullet(HitByBulletEvent event) {
-		play(10);
+		state.addPenalty(0.8);
+		Logger.log("onHitByBullet");
 	}
 
 	@Override
 	public void onHitWall(HitWallEvent event) {
-		play(10);
+		state.addPenalty(0.1);
+		Logger.log("onHitWall");
 	}
 
 	@Override
 	public void onBulletHit(BulletHitEvent event) {
+		state.addReward(100.0);
+		Logger.log("onBulletHit");
+	}
 
+	@Override
+	public void onBulletMissed(BulletMissedEvent event) {
+		state.addPenalty(0.1);
+		Logger.log("onBulletMissed");
 	}
 
 	@Override
 	public void onScannedRobot(ScannedRobotEvent event) {
 		state.setLastEnemyInfo(event);
-
-		radarTurn = 10;
-		lastKnownPosition = getRadarHeading();
-
-		turnGunToSpecificHeading(lastKnownPosition);
-		System.err.println("Radar base heading " + getRadarHeading());
-		fire(1);
+		state.addReward(0.05);
+		Logger.log("onScannedRobot");
 	}
 
 	private void play(int numberOfActions) {
 		configuration.getReferee().setMaxIter(numberOfActions);
+		Logger.log("executing episode with maxIter: " + numberOfActions);
 		configuration.getReferee().episode(getState());
+		Logger.log("episodes done");
 	}
 
-	private void turnGunToSpecificHeading(double heading) {
-		double currentGunHeading = getGunHeading();
-		double difference = currentGunHeading - heading;
-		if (difference > 0) {
-			turnLeft(Math.abs(difference));
-		} else {
-			turnRight(Math.abs(difference));
-		}
-		System.err.println("difference " + Math.abs(difference));
+	@Override
+	public void onRoundEnded(RoundEndedEvent event) {
+		Logger.log("onRoundEnded");
 	}
 
 }

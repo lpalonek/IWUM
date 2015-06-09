@@ -16,8 +16,8 @@ public class FireBullet extends BotAction {
 	}
 
 	@Override
-	public FireBullet execute(Robot robot, double firedBulletPower) {
-		this.firedBulletPower = firedBulletPower;
+	public FireBullet execute(Robot robot, double argument) {
+		firedBulletPower = 0.1 + argument * 2.9;
 		robot.fireBullet(firedBulletPower);
 		return this;
 	}

@@ -16,8 +16,8 @@ public class RadarTurn extends BotAction {
 	}
 
 	@Override
-	public RadarTurn execute(Robot robot, double radarTurn) {
-		this.radarTurn = radarTurn;
+	public RadarTurn execute(Robot robot, double argument) {
+		radarTurn = -180 + argument * 360;
 		robot.turnRadarRight(radarTurn);
 		return this;
 	}

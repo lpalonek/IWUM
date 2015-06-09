@@ -1,5 +1,7 @@
 package pl.edu.agh.iwum;
 
+import java.util.Random;
+
 import pl.edu.agh.iwum.actions.BotAction;
 import pl.edu.agh.iwum.actions.FireBullet;
 import pl.edu.agh.iwum.actions.GunTurn;
@@ -18,6 +20,7 @@ public class RobocodeEnvironment implements IEnvironmentSingle {
 	private static final long serialVersionUID = 39129605484574612L;
 
 	private PiqleBot bot = null;
+	private Random random = new Random();
 
 	@Override
 	public ActionList getActionList(IState s) {
@@ -36,7 +39,7 @@ public class RobocodeEnvironment implements IEnvironmentSingle {
 	public IState successorState(IState s, IAction a) {
 		BotState botState = (BotState) s;
 		BotAction action = (BotAction) a;
-		double argument = Double.NaN; //TODO
+		double argument = random.nextDouble();
 		action.execute(bot, argument);
 		return bot.getState();
 	}
@@ -51,16 +54,15 @@ public class RobocodeEnvironment implements IEnvironmentSingle {
 		BotState previousState = (BotState) s1;
 		BotState newState = (BotState) s1;
 		BotAction takenAction = (BotAction) a;
-
-		return previousState.getRewardAndClearIt();
+		double reward = previousState.getRewardAndClearIt();
+		Logger.log("my reward: " + reward);
+		return reward;
 	}
 
 	@Override
 	public boolean isFinal(IState s) {
 		BotState botState = (BotState) s;
-		boolean isEveryoneElseDead = bot.getOthers() == 0;
-		boolean amIDead = botState.getEnergy() <= 0;
-		return isEveryoneElseDead || amIDead;
+		return isEveryoneElseDead() || amIDead(s);
 	}
 
 	@Override

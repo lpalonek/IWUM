@@ -16,8 +16,8 @@ public class MoveBack extends BotAction {
 	}
 
 	@Override
-	public MoveBack execute(Robot robot, double back) {
-		this.back = back;
+	public MoveBack execute(Robot robot, double argument) {
+		back = argument * 100;
 		robot.back(back);
 		return this;
 	}

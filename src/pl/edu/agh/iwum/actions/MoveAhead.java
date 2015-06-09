@@ -16,8 +16,8 @@ public class MoveAhead extends BotAction {
 	}
 
 	@Override
-	public MoveAhead execute(Robot robot, double ahead) {
-		this.ahead = ahead;
+	public MoveAhead execute(Robot robot, double argument) {
+		ahead = argument * 100;
 		robot.ahead(ahead);
 		return this;
 	}

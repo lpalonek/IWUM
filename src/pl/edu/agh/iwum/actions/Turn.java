@@ -16,8 +16,8 @@ public class Turn extends BotAction {
 	}
 
 	@Override
-	public Turn execute(Robot robot, double turn) {
-		this.turn = turn;
+	public Turn execute(Robot robot, double argument) {
+		turn = -180 + argument * 360;
 		robot.turnRight(turn);
 		return this;
 	}
