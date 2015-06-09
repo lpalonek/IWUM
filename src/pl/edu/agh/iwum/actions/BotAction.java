@@ -30,13 +30,42 @@ public abstract class BotAction implements IAction {
 	/**
 	 * 
 	 * @param robot
-	 * @param argument Number in range [0.0, 1.0]
+	 * @param argument
+	 *            Number in range [0.0, 1.0]
 	 * @return
 	 */
 	public abstract BotAction execute(Robot robot, double argument);
 
 	@Override
 	public abstract Object copy();
+
+	public BotAction combine(final BotAction action) {
+		final BotAction myAction = (BotAction) copy();
+		final BotAction combinedActions = new BotAction() {
+			@Override
+			public BotAction execute(Robot robot, double argument) {
+				myAction.execute(robot, argument);
+				action.execute(robot, argument);
+				return this;
+			}
+
+			@Override
+			public Object copy() {
+				// TODO: implement me
+				return this;
+			}
+		};
+
+		combinedActions.firedBulletPower += action.firedBulletPower;
+		combinedActions.radarTurn += action.radarTurn;
+		combinedActions.gunTurn += action.gunTurn;
+		combinedActions.turn += action.turn;
+		combinedActions.ahead += action.ahead;
+		combinedActions.ahead -= action.back;
+		combinedActions.back = 0;
+
+		return combinedActions;
+	}
 
 	@Override
 	public int nnCodingSize() {

@@ -20,7 +20,7 @@ public class PiqleBot extends Robot {
 		setAllColors(Color.ORANGE);
 		configuration.getEnvironment().setBot(this);
 		while (true) {
-			play(1);
+			play(1000);
 		}
 	}
 

@@ -6,8 +6,6 @@ import pl.edu.agh.iwum.actions.BotAction;
 import pl.edu.agh.iwum.actions.FireBullet;
 import pl.edu.agh.iwum.actions.GunTurn;
 import pl.edu.agh.iwum.actions.MoveAhead;
-import pl.edu.agh.iwum.actions.MoveBack;
-import pl.edu.agh.iwum.actions.NoAction;
 import pl.edu.agh.iwum.actions.RadarTurn;
 import pl.edu.agh.iwum.actions.Turn;
 import environment.ActionList;
@@ -25,13 +23,17 @@ public class RobocodeEnvironment implements IEnvironmentSingle {
 	@Override
 	public ActionList getActionList(IState s) {
 		ActionList actionList = new ActionList(s);
-		actionList.add(new NoAction());
-		actionList.add(new MoveAhead());
-		actionList.add(new MoveBack());
-		actionList.add(new GunTurn());
-		actionList.add(new RadarTurn());
-		actionList.add(new Turn());
-		actionList.add(new FireBullet());
+		// actionList.add(new NoAction());
+		// actionList.add(new MoveAhead());
+		// actionList.add(new MoveBack());
+		// actionList.add(new GunTurn());
+		// actionList.add(new RadarTurn());
+		// actionList.add(new Turn());
+		actionList.add(new MoveAhead().combine(new Turn()).combine(new FireBullet()));
+		actionList.add(new MoveAhead().combine(new Turn()));
+		actionList.add(new MoveAhead().combine(new RadarTurn()));
+		actionList.add(new MoveAhead().combine(new GunTurn()));
+		actionList.add(new GunTurn().combine(new FireBullet()));
 		return actionList;
 	}
 

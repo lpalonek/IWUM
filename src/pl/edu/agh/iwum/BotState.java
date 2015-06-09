@@ -52,6 +52,38 @@ public class BotState extends AbstractState {
 	}
 
 	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		BotState other = (BotState) obj;
+		if (Double.doubleToLongBits(energy) != Double.doubleToLongBits(other.energy))
+			return false;
+		if (Double.doubleToLongBits(gunHeading) != Double.doubleToLongBits(other.gunHeading))
+			return false;
+		if (Double.doubleToLongBits(heading) != Double.doubleToLongBits(other.heading))
+			return false;
+		if (Double.doubleToLongBits(lastEnemyDistance) != Double.doubleToLongBits(other.lastEnemyDistance))
+			return false;
+		if (Double.doubleToLongBits(lastEnemyEnergy) != Double.doubleToLongBits(other.lastEnemyEnergy))
+			return false;
+		if (Double.doubleToLongBits(lastEnemyHeading) != Double.doubleToLongBits(other.lastEnemyHeading))
+			return false;
+		if (Double.doubleToLongBits(radarHeading) != Double.doubleToLongBits(other.radarHeading))
+			return false;
+		if (Double.doubleToLongBits(reward) != Double.doubleToLongBits(other.reward))
+			return false;
+		if (Double.doubleToLongBits(x) != Double.doubleToLongBits(other.x))
+			return false;
+		if (Double.doubleToLongBits(y) != Double.doubleToLongBits(other.y))
+			return false;
+		return true;
+	}
+
+	@Override
 	public int nnCodingSize() {
 		return 9;
 	}
