@@ -6,8 +6,6 @@ import environment.IState;
 
 public class QLearning {
 
-	private static final int MAX_NUMBER_OF_LEARNINGS = 20000;
-
 	private static QLearning instance = null;
 
 	public static QLearning getInstance() {
@@ -18,20 +16,17 @@ public class QLearning {
 	}
 
 	private QLearningSelector selector;
-	private int numberOfLearnings;
 
 	public QLearning() {
 		selector = new QLearningSelector();
 	}
 
-	public boolean wantsToLearn() {
-		return numberOfLearnings < MAX_NUMBER_OF_LEARNINGS;
+	public boolean wantsToLearn(int currentTurn) {
+		return currentTurn < Settings.NUMBER_OF_LEARNING_ROUNDS;
 	}
 
 	public void learn(IState previousState, IState currentState, IAction action, double reward) {
-		++numberOfLearnings;
 		selector.learn(previousState, currentState, action, reward);
-		Logger.getInstance().log("Learning: " + numberOfLearnings + "/" + MAX_NUMBER_OF_LEARNINGS);
 	}
 
 	public ShotAction getBestAction(IState enemyState) {

@@ -70,34 +70,34 @@ public class EnemyState implements IState {
 	@Override
 	public void setEnvironment(IEnvironment c) {
 		// TODO Auto-generated method stub
-		Logger.getInstance().log("EnemyState:setEnvironment: I'm not implemented yet.");
+		Logger.getInstance().info("EnemyState:setEnvironment: I'm not implemented yet.");
 	}
 
 	@Override
 	public IState modify(IAction a) {
 		// TODO Auto-generated method stub
-		Logger.getInstance().log("EnemyState:modify: I'm not implemented yet.");
+		Logger.getInstance().info("EnemyState:modify: I'm not implemented yet.");
 		return null;
 	}
 
 	@Override
 	public IEnvironment getEnvironment() {
 		// TODO Auto-generated method stub
-		Logger.getInstance().log("EnemyState:getEnvironment: I'm not implemented yet.");
+		Logger.getInstance().info("EnemyState:getEnvironment: I'm not implemented yet.");
 		return null;
 	}
 
 	@Override
 	public double getReward(IState old, IAction a) {
 		// TODO Auto-generated method stub
-		Logger.getInstance().log("EnemyState:getReward: I'm not implemented yet.");
+		Logger.getInstance().info("EnemyState:getReward: I'm not implemented yet.");
 		return 0;
 	}
 
 	@Override
 	public boolean isFinal() {
 		// TODO Auto-generated method stub
-		Logger.getInstance().log("EnemyState:isFinal: I'm not implemented yet.");
+		Logger.getInstance().info("EnemyState:isFinal: I'm not implemented yet.");
 		return false;
 	}
 

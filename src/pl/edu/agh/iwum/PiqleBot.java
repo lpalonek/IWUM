@@ -3,8 +3,8 @@ package pl.edu.agh.iwum;
 import static robocode.util.Utils.normalRelativeAngleDegrees;
 
 import java.awt.Color;
-import java.util.Random;
 
+import robocode.BattleEndedEvent;
 import robocode.Bullet;
 import robocode.BulletHitBulletEvent;
 import robocode.BulletHitEvent;
@@ -16,13 +16,8 @@ import environment.IState;
 
 public class PiqleBot extends Robot {
 
-	private static Random random;
-	private static StateActionPairMap<Bullet> shots;
-
-	static {
-		random = new Random();
-		shots = new StateActionPairMap<Bullet>();
-	}
+	private static StateActionPairMap<Bullet> shots = new StateActionPairMap<Bullet>();
+	private static int currentRound = 0;
 
 	private int numberOfFailedTrackingAttempts;
 	private double gunTurnAmount;
@@ -32,6 +27,8 @@ public class PiqleBot extends Robot {
 		initializeParameters();
 		setAdjustGunForRobotTurn(true);
 		setAllColors(Color.ORANGE);
+		++currentRound;
+
 		while (true) {
 			turnGunRight(gunTurnAmount);
 			++numberOfFailedTrackingAttempts;
@@ -58,19 +55,36 @@ public class PiqleBot extends Robot {
 	}
 
 	@Override
+	public void onBattleEnded(BattleEndedEvent event) {
+		ShotStatistics.getInstance().log();
+	}
+
+	@Override
 	public void onBulletHit(BulletHitEvent e) {
+		if (QLearning.getInstance().wantsToLearn(currentRound)) {
+			ShotStatistics.getInstance().learningShotHit();
+		} else {
+			ShotStatistics.getInstance().learnedShotHit();
+		}
+
 		Bullet bullet = e.getBullet();
-		double reward = bullet.getPower() * 3;
 		StateActionPair stateActionPair = shots.get(bullet);
+		double reward = Settings.getReward(e);
 		learn(stateActionPair, reward);
 		shots.remove(bullet);
 	}
 
 	@Override
 	public void onBulletMissed(BulletMissedEvent e) {
+		if (QLearning.getInstance().wantsToLearn(currentRound)) {
+			ShotStatistics.getInstance().learningShotMiss();
+		} else {
+			ShotStatistics.getInstance().learnedShotMiss();
+		}
+
 		Bullet bullet = e.getBullet();
-		double reward = -bullet.getPower() / 3;
 		StateActionPair stateActionPair = shots.get(bullet);
+		double reward = Settings.getReward(e);
 		learn(stateActionPair, reward);
 		shots.remove(bullet);
 	}
@@ -93,10 +107,8 @@ public class PiqleBot extends Robot {
 	}
 
 	private void tryToAttack(ScannedRobotEvent e) {
-		if (QLearning.getInstance().wantsToLearn()) {
-			int maxShotPowerIndex = ShotAction.AVAILABLE_SHOT_POWERS.length;
-			double shotPower = ShotAction.AVAILABLE_SHOT_POWERS[random.nextInt(maxShotPowerIndex)];
-			ShotAction action = new ShotAction(shotPower);
+		if (QLearning.getInstance().wantsToLearn(currentRound)) {
+			ShotAction action = new ShotAction(ShotAction.GetRandomShotPower());
 			Bullet bullet = action.execute(this);
 			if (bullet != null) {
 				shots.add(bullet, new StateActionPair(getEnemyBotState(), action));
@@ -110,14 +122,14 @@ public class PiqleBot extends Robot {
 	}
 
 	private void learnNoShotAction(ShotAction action) {
-		double reward = 15.0;
+		double reward = Settings.getRewardForNotShooting();
 		QLearning.getInstance().learn(getEnemyBotState(), getEnemyBotState(), action, reward);
 	}
 
 	private ShotAction getBestAttackingAction(ScannedRobotEvent e) {
 		IState currentEnemyState = getEnemyBotState(e);
 		ShotAction bestAction = QLearning.getInstance().getBestAction(currentEnemyState);
-		Logger.getInstance().log("bestAction.getShotPower() == " + bestAction.getShotPower());
+		Logger.getInstance().debug("bestAction.getShotPower() == " + bestAction.getShotPower());
 		return bestAction;
 	}
 
