@@ -11,23 +11,17 @@ import robocode.BulletHitEvent;
 import robocode.BulletMissedEvent;
 import robocode.Robot;
 import robocode.ScannedRobotEvent;
-import algorithms.QLearningSelector;
 import environment.IAction;
 import environment.IState;
 
 public class PiqleBot extends Robot {
 
-	private static final int MAX_NUMBER_OF_LEARNINGS = 10000;
-	private static int numberOfLearnings;
-
-	private static QLearningSelector selector;
-	private static StateActionPairMap<Bullet> shots;
 	private static Random random;
+	private static StateActionPairMap<Bullet> shots;
 
 	static {
-		selector = new QLearningSelector();
-		shots = new StateActionPairMap<Bullet>();
 		random = new Random();
+		shots = new StateActionPairMap<Bullet>();
 	}
 
 	private int numberOfFailedTrackingAttempts;
@@ -96,15 +90,14 @@ public class PiqleBot extends Robot {
 	}
 
 	private void tryToAttack(ScannedRobotEvent e) {
-		if (shouldILearn()) {
+		if (ShotActionQLearning.getInstance().wantsToLearn()) {
 			double shotPower = random.nextDouble() > 0.5 ? 3.0 : 0.0;
 			ShotAction action = new ShotAction(shotPower);
 			Bullet bullet = action.execute(this);
 			if (bullet != null) {
 				shots.add(bullet, new StateActionPair(getEnemyBotState(), action));
 			} else {
-				++numberOfLearnings;
-				selector.learn(getEnemyBotState(), getEnemyBotState(), action, 0.1);
+				ShotActionQLearning.getInstance().learn(getEnemyBotState(), getEnemyBotState(), action, 0.1);
 			}
 		} else {
 			Logger.getInstance().log("I'm using my knowledge.");
@@ -113,22 +106,17 @@ public class PiqleBot extends Robot {
 		}
 	}
 
-	private boolean shouldILearn() {
-		return numberOfLearnings < MAX_NUMBER_OF_LEARNINGS;
-	}
-
 	private ShotAction getBestAttackingAction(ScannedRobotEvent e) {
 		IState currentEnemyState = new EnemyState(e.getDistance(), e.getBearing());
-		ShotAction bestAction = (ShotAction) selector.bestAction(currentEnemyState);
+		ShotAction bestAction = ShotActionQLearning.getInstance().getBestAction(currentEnemyState);
 		Logger.getInstance().log("bestAction.getShotPower() == " + bestAction.getShotPower());
 		return bestAction;
 	}
 
 	private void learn(StateActionPair stateActionPair, double reward) {
-		++numberOfLearnings;
 		IState previousState = stateActionPair.getState();
 		IAction action = stateActionPair.getAction();
-		selector.learn(previousState, getEnemyBotState(), action, reward);
+		ShotActionQLearning.getInstance().learn(previousState, getEnemyBotState(), action, reward);
 	}
 
 	private IState getEnemyBotState() {
