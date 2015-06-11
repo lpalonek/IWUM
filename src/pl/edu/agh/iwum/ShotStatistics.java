@@ -23,6 +23,12 @@ public class ShotStatistics {
 		numberOfLearnedAccurateShots = 0;
 	}
 
+	public void log() {
+		Logger.getInstance().log("Learning accuracy: \t" + toPercents(getLearningAccuracy()) + "%");
+		Logger.getInstance().log("Learned accuracy: \t" + toPercents(getLearnedAccuracy()) + "%");
+		Logger.getInstance().log("Percentage gain: \t" + toPercents(getPercentageGain()) + "%");
+	}
+
 	public void learningShotHit() {
 		++numberOfLearningShots;
 		++numberOfLearningAccurateShots;
@@ -49,9 +55,12 @@ public class ShotStatistics {
 		return (1.0 * numberOfLearnedAccurateShots) / numberOfLearnedShots;
 	}
 
-	public void log() {
-		Logger.getInstance().info("Learning accuracy: \t" + getLearningAccuracy());
-		Logger.getInstance().info("Learned accuracy: \t" + getLearnedAccuracy());
+	private double getPercentageGain() {
+		return getLearnedAccuracy() / getLearningAccuracy() - 1.0;
+	}
+
+	private double toPercents(double value) {
+		return Math.round(value * 10000) / 100.0;
 	}
 
 }
