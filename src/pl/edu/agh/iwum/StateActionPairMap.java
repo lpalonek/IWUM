@@ -27,4 +27,8 @@ public class StateActionPairMap<T extends Object> {
 		map.remove(key);
 	}
 
+	public void clear() {
+		map.clear();
+	}
+
 }

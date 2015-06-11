@@ -4,15 +4,15 @@ import algorithms.QLearningSelector;
 import environment.IAction;
 import environment.IState;
 
-public class ShotActionQLearning {
+public class QLearning {
 
-	private static final int MAX_NUMBER_OF_LEARNINGS = 10000;
+	private static final int MAX_NUMBER_OF_LEARNINGS = 1000;
 
-	private static ShotActionQLearning instance = null;
+	private static QLearning instance = null;
 
-	public static ShotActionQLearning getInstance() {
+	public static QLearning getInstance() {
 		if (instance == null) {
-			instance = new ShotActionQLearning();
+			instance = new QLearning();
 		}
 		return instance;
 	}
@@ -20,7 +20,7 @@ public class ShotActionQLearning {
 	private QLearningSelector selector;
 	private int numberOfLearnings;
 
-	public ShotActionQLearning() {
+	public QLearning() {
 		selector = new QLearningSelector();
 	}
 
@@ -31,6 +31,7 @@ public class ShotActionQLearning {
 	public void learn(IState previousState, IState currentState, IAction action, double reward) {
 		++numberOfLearnings;
 		selector.learn(previousState, currentState, action, reward);
+		Logger.getInstance().log("Learning: " + numberOfLearnings + "/" + MAX_NUMBER_OF_LEARNINGS);
 	}
 
 	public ShotAction getBestAction(IState enemyState) {
