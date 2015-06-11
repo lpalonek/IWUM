@@ -60,7 +60,7 @@ public class PiqleBot extends Robot {
 	@Override
 	public void onBulletHit(BulletHitEvent e) {
 		Bullet bullet = e.getBullet();
-		double reward = bullet.getPower() * 10;
+		double reward = bullet.getPower() * 3;
 		StateActionPair stateActionPair = shots.get(bullet);
 		learn(stateActionPair, reward);
 		shots.remove(bullet);
@@ -69,7 +69,7 @@ public class PiqleBot extends Robot {
 	@Override
 	public void onBulletMissed(BulletMissedEvent e) {
 		Bullet bullet = e.getBullet();
-		double reward = -bullet.getPower() / 10;
+		double reward = -bullet.getPower() / 3;
 		StateActionPair stateActionPair = shots.get(bullet);
 		learn(stateActionPair, reward);
 		shots.remove(bullet);
@@ -110,16 +110,14 @@ public class PiqleBot extends Robot {
 	}
 
 	private void learnNoShotAction(ShotAction action) {
-		double reward = 0.1;
+		double reward = 15.0;
 		QLearning.getInstance().learn(getEnemyBotState(), getEnemyBotState(), action, reward);
 	}
 
 	private ShotAction getBestAttackingAction(ScannedRobotEvent e) {
 		IState currentEnemyState = getEnemyBotState(e);
 		ShotAction bestAction = QLearning.getInstance().getBestAction(currentEnemyState);
-		if (bestAction.getShotPower() > 0) {
-			Logger.getInstance().log("bestAction.getShotPower() == " + bestAction.getShotPower());
-		}
+		Logger.getInstance().log("bestAction.getShotPower() == " + bestAction.getShotPower());
 		return bestAction;
 	}
 

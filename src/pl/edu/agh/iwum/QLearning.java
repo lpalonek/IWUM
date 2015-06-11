@@ -6,7 +6,7 @@ import environment.IState;
 
 public class QLearning {
 
-	private static final int MAX_NUMBER_OF_LEARNINGS = 1000;
+	private static final int MAX_NUMBER_OF_LEARNINGS = 20000;
 
 	private static QLearning instance = null;
 
