@@ -1,74 +1,138 @@
 package pl.edu.agh.iwum;
 
-import java.awt.Color;
+import static robocode.util.Utils.normalRelativeAngleDegrees;
 
-import robocode.HitByBulletEvent;
-import robocode.HitWallEvent;
+import java.awt.Color;
+import java.util.Random;
+
+import robocode.Bullet;
+import robocode.BulletHitBulletEvent;
+import robocode.BulletHitEvent;
+import robocode.BulletMissedEvent;
 import robocode.Robot;
 import robocode.ScannedRobotEvent;
+import algorithms.QLearningSelector;
+import environment.IAction;
+import environment.IState;
 
 public class PiqleBot extends Robot {
 
-    private PiqleConfiguration configuration = PiqleConfiguration.getInstance();
+	private static final int MAX_NUMBER_OF_LEARNINGS = 10000;
+	private static int numberOfLearnings;
 
-    private double lastKnownPosition;
+	private static QLearningSelector selector;
+	private static StateActionPairMap<Bullet> shots;
+	private static Random random;
 
-    private double radarTurn;
+	static {
+		selector = new QLearningSelector();
+		shots = new StateActionPairMap<Bullet>();
+		random = new Random();
+	}
 
-    public void run() {
-        setAllColors(Color.ORANGE);
-        configuration.getEnvironment().setBot(this);
-        radarTurn = 10;
-        while (true) {
-            turnRadarRight(radarTurn/2);
-            turnRadarLeft( radarTurn);
-            System.err.println(getRadarHeading());
-            turnRadarRight(radarTurn/2);
-            if(radarTurn <= 360) {
-                radarTurn *= 2;
-            }
+	private int numberOfFailedTrackingAttempts;
+	private double gunTurnAmount;
+	private EnemyState lastEnemyState;
 
-        }
-    }
+	public void run() {
+		initializeParameters();
+		setAdjustGunForRobotTurn(true);
+		setAllColors(Color.ORANGE);
+		while (true) {
+			turnGunRight(gunTurnAmount);
+			++numberOfFailedTrackingAttempts;
 
-    public BotState getState() {
-        return new BotState(configuration.getEnvironment(), this);
-    }
+			if (numberOfFailedTrackingAttempts > 2) {
+				gunTurnAmount = -10;
+			}
 
-    @Override
-    public void onHitByBullet(HitByBulletEvent event) {
-        play(10);
-    }
+			if (numberOfFailedTrackingAttempts > 5) {
+				gunTurnAmount = 10;
+			}
 
-    @Override
-    public void onHitWall(HitWallEvent event) {
-        play(10);
-    }
+			if (numberOfFailedTrackingAttempts > 23) {
+				gunTurnAmount = -10;
+			}
+		}
+	}
 
-    @Override
-    public void onScannedRobot(ScannedRobotEvent event) {
-        radarTurn = 10;
-        lastKnownPosition = getRadarHeading();
+	private void initializeParameters() {
+		numberOfFailedTrackingAttempts = 0;
+		gunTurnAmount = 10;
+		lastEnemyState = new EnemyState(0, 0);
+	}
 
-        turnGunToSpecificHeading(lastKnownPosition);
-        System.err.println("Radar base heading "+ getRadarHeading());
-        fire(1);
-    }
+	@Override
+	public void onBulletHit(BulletHitEvent e) {
+		Bullet bullet = e.getBullet();
+		StateActionPair stateActionPair = shots.get(bullet);
+		learn(stateActionPair, 1.0);
+		shots.remove(bullet);
+	}
 
-    private void play(int numberOfActions) {
-        configuration.getReferee().setMaxIter(numberOfActions);
-        configuration.getReferee().episode(getState());
-    }
+	@Override
+	public void onBulletMissed(BulletMissedEvent e) {
+		Bullet bullet = e.getBullet();
+		StateActionPair stateActionPair = shots.get(bullet);
+		learn(stateActionPair, -1.0);
+		shots.remove(bullet);
+	}
 
-    private void turnGunToSpecificHeading(double heading) {
-        double currentGunHeading = getGunHeading();
-        double difference = currentGunHeading - heading;
-        if (difference > 0) {
-            turnLeft(Math.abs(difference));
-        } else {
-            turnRight(Math.abs(difference));
-        }
-        System.err.println("difference " + Math.abs(difference));
-    }
+	@Override
+	public void onBulletHitBullet(BulletHitBulletEvent event) {
+		Bullet bullet = event.getBullet();
+		// this event is treated as noise data
+		// therefore there's no learn() call in here
+		shots.remove(bullet);
+	}
+
+	@Override
+	public void onScannedRobot(ScannedRobotEvent e) {
+		lastEnemyState = new EnemyState(e.getDistance(), e.getBearing());
+		numberOfFailedTrackingAttempts = 0;
+		gunTurnAmount = normalRelativeAngleDegrees(e.getBearing() + (getHeading() - getRadarHeading()));
+		turnGunRight(gunTurnAmount);
+		tryToAttack(e);
+	}
+
+	private void tryToAttack(ScannedRobotEvent e) {
+		if (shouldILearn()) {
+			double shotPower = random.nextDouble() > 0.5 ? 3.0 : 0.0;
+			ShotAction action = new ShotAction(shotPower);
+			Bullet bullet = action.execute(this);
+			if (bullet != null) {
+				shots.add(bullet, new StateActionPair(getEnemyBotState(), action));
+			} else {
+				++numberOfLearnings;
+				selector.learn(getEnemyBotState(), getEnemyBotState(), action, 0.1);
+			}
+		} else {
+			Logger.getInstance().log("I'm using my knowledge.");
+			ShotAction bestAttackingAction = getBestAttackingAction(e);
+			bestAttackingAction.execute(this);
+		}
+	}
+
+	private boolean shouldILearn() {
+		return numberOfLearnings < MAX_NUMBER_OF_LEARNINGS;
+	}
+
+	private ShotAction getBestAttackingAction(ScannedRobotEvent e) {
+		IState currentEnemyState = new EnemyState(e.getDistance(), e.getBearing());
+		ShotAction bestAction = (ShotAction) selector.bestAction(currentEnemyState);
+		Logger.getInstance().log("bestAction.getShotPower() == " + bestAction.getShotPower());
+		return bestAction;
+	}
+
+	private void learn(StateActionPair stateActionPair, double reward) {
+		++numberOfLearnings;
+		IState previousState = stateActionPair.getState();
+		IAction action = stateActionPair.getAction();
+		selector.learn(previousState, getEnemyBotState(), action, reward);
+	}
+
+	private IState getEnemyBotState() {
+		return new EnemyState(lastEnemyState.getDistance(), lastEnemyState.getBearing());
+	}
 
 }
