@@ -69,7 +69,7 @@ public class PiqleBot extends Robot {
 
 		Bullet bullet = e.getBullet();
 		StateActionPair stateActionPair = shots.get(bullet);
-		double reward = Settings.getReward(e);
+		double reward = Settings.getInstance().getReward(e);
 		learn(stateActionPair, reward);
 		shots.remove(bullet);
 	}
@@ -84,7 +84,7 @@ public class PiqleBot extends Robot {
 
 		Bullet bullet = e.getBullet();
 		StateActionPair stateActionPair = shots.get(bullet);
-		double reward = Settings.getReward(e);
+		double reward = Settings.getInstance().getReward(e);
 		learn(stateActionPair, reward);
 		shots.remove(bullet);
 	}
@@ -122,7 +122,7 @@ public class PiqleBot extends Robot {
 	}
 
 	private void learnNoShotAction(ShotAction action) {
-		double reward = Settings.getRewardForNotShooting();
+		double reward = Settings.getInstance().getRewardForNotShooting();
 		QLearning.getInstance().learn(getEnemyBotState(), getEnemyBotState(), action, reward);
 	}
 

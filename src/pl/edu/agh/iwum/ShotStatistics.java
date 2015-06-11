@@ -60,6 +60,9 @@ public class ShotStatistics {
 	}
 
 	private double toPercents(double value) {
+		if (value < -1 || value > 1) {
+			return Double.NaN;
+		}
 		return Math.round(value * 10000) / 100.0;
 	}
 

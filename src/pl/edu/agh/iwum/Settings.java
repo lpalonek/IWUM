@@ -7,19 +7,28 @@ public class Settings {
 
 	public static final int NUMBER_OF_LEARNING_ROUNDS = 100;
 
-	public static double getReward(BulletHitEvent e) {
+	private static Settings instance = null;
+
+	public static Settings getInstance() {
+		if (instance == null) {
+			instance = new Settings();
+		}
+		return instance;
+	}
+
+	public double getReward(BulletHitEvent e) {
 		return logRewardAndReturnIt("bullet hit", e.getBullet().getPower() * 2);
 	}
 
-	public static double getReward(BulletMissedEvent e) {
+	public double getReward(BulletMissedEvent e) {
 		return logRewardAndReturnIt("bullet miss", -e.getBullet().getPower() * 2);
 	}
 
-	public static double getRewardForNotShooting() {
-		return logRewardAndReturnIt("not shooting", 15);
+	public double getRewardForNotShooting() {
+		return logRewardAndReturnIt("not shooting", 6);
 	}
 
-	private static double logRewardAndReturnIt(String forWhat, double reward) {
+	private double logRewardAndReturnIt(String forWhat, double reward) {
 		Logger.getInstance().info("Reward for " + forWhat + ": " + reward);
 		return reward;
 	}
