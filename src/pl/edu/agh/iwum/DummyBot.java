@@ -10,6 +10,8 @@ package pl.edu.agh.iwum;
 
 import robocode.*;
 
+import java.awt.*;
+
 /**
  * Projekt - a robot by (your name here)
  */
@@ -21,39 +23,55 @@ public class DummyBot
      */
     public void run() {
         while (true) {
-            // Tell the game that when we take move,
-            // we'll also want to turn right... a lot.
-            setTurnRight(10000);
-            // Limit our speed to 5
-            setMaxVelocity(5);
-            // Start moving (and turning)
-            ahead(10000);
-            // Repeat.
+            ahead(100);
+            turnGunRight(360);
+            back(100);
+            turnGunRight(360);
         }
     }
 
     /**
-     * onScannedRobot: What to do when you see another robot
+     * Fire when we see a robot
      */
     public void onScannedRobot(ScannedRobotEvent e) {
-        // Replace the next line with any behavior you would like
-        // fire(1);
+        // demonstrate feature of debugging properties on RobotDialog
+        setDebugProperty("lastScannedRobot", e.getName() + " at " + e.getBearing() + " degrees at time " + getTime());
+
+        fire(1);
     }
 
     /**
-     * onHitByBullet: What to do when you're hit by a bullet
+     * We were hit!  Turn perpendicular to the bullet,
+     * so our seesaw might avoid a future shot.
+     * In addition, draw orange circles where we were hit.
      */
     public void onHitByBullet(HitByBulletEvent e) {
-        // Replace the next line with any behavior you would like
-        // back(10);
+        // demonstrate feature of debugging properties on RobotDialog
+        setDebugProperty("lastHitBy", e.getName() + " with power of bullet " + e.getPower() + " at time " + getTime());
+
+        // show how to remove debugging property
+        setDebugProperty("lastScannedRobot", null);
+
+        // gebugging by painting to battle view
+        Graphics2D g = getGraphics();
+
+        g.setColor(Color.orange);
+        g.drawOval((int) (getX() - 55), (int) (getY() - 55), 110, 110);
+        g.drawOval((int) (getX() - 56), (int) (getY() - 56), 112, 112);
+        g.drawOval((int) (getX() - 59), (int) (getY() - 59), 118, 118);
+        g.drawOval((int) (getX() - 60), (int) (getY() - 60), 120, 120);
+
+        turnLeft(90 - e.getBearing());
     }
 
     /**
-     * onHitWall: What to do when you hit a wall
+     * Paint a red circle around our PaintingRobot
      */
-    public void onHitWall(HitWallEvent e) {
-        // Replace the next line with any behavior you would like
-        // back(20);
+    public void onPaint(Graphics2D g) {
+        g.setColor(Color.red);
+        g.drawOval((int) (getX() - 50), (int) (getY() - 50), 100, 100);
+        g.setColor(new Color(0, 0xFF, 0, 30));
+        g.fillOval((int) (getX() - 60), (int) (getY() - 60), 120, 120);
     }
 }
 
