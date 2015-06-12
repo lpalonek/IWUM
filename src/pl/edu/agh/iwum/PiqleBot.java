@@ -50,7 +50,7 @@ public class PiqleBot extends Robot {
 	private void initializeParameters() {
 		numberOfFailedTrackingAttempts = 0;
 		gunTurnAmount = 10;
-		lastEnemyState = new EnemyState(0);
+		lastEnemyState = new EnemyState(0, 0);
 		shots.clear();
 	}
 
@@ -140,11 +140,11 @@ public class PiqleBot extends Robot {
 	}
 
 	private EnemyState getEnemyBotState() {
-		return new EnemyState(lastEnemyState.getDistance());
+		return lastEnemyState.copy();
 	}
 
 	private EnemyState getEnemyBotState(ScannedRobotEvent e) {
-		EnemyState currentEnemyState = new EnemyState(e.getDistance());
+		EnemyState currentEnemyState = new EnemyState(e.getDistance(), e.getBearing());
 		return currentEnemyState;
 	}
 

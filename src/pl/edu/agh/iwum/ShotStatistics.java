@@ -23,10 +23,17 @@ public class ShotStatistics {
 		numberOfLearnedAccurateShots = 0;
 	}
 
+	public String[] getLogStrings() {
+		String learningAccuracy = "Learning accuracy: \t" + toPercents(getLearningAccuracy()) + "%";
+		String learnedAccuracy = "Learned accuracy: \t" + toPercents(getLearnedAccuracy()) + "%";
+		String percentageGain = "Percentage gain: \t" + toPercents(getPercentageGain()) + "%";
+		return new String[] { learningAccuracy, learnedAccuracy, percentageGain };
+	}
+
 	public void log() {
-		Logger.getInstance().log("Learning accuracy: \t" + toPercents(getLearningAccuracy()) + "%");
-		Logger.getInstance().log("Learned accuracy: \t" + toPercents(getLearnedAccuracy()) + "%");
-		Logger.getInstance().log("Percentage gain: \t" + toPercents(getPercentageGain()) + "%");
+		for (String string : getLogStrings()) {
+			Logger.getInstance().log(string);
+		}
 	}
 
 	public void learningShotHit() {
@@ -60,9 +67,6 @@ public class ShotStatistics {
 	}
 
 	private double toPercents(double value) {
-		if (value < -1 || value > 1) {
-			return Double.NaN;
-		}
 		return Math.round(value * 10000) / 100.0;
 	}
 

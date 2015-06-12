@@ -10,13 +10,19 @@ public class EnemyState implements IState {
 	private static final long serialVersionUID = -3643819132494631724L;
 
 	private double distance;
+	private double bearing;
 
-	public EnemyState(double distance) {
+	public EnemyState(double distance, double bearing) {
 		this.distance = Math.round(distance);
+		this.bearing = Math.round(bearing);
 	}
 
 	public double getDistance() {
 		return distance;
+	}
+
+	public double getBearing() {
+		return bearing;
 	}
 
 	@Override
@@ -24,6 +30,8 @@ public class EnemyState implements IState {
 		final int prime = 31;
 		int result = 1;
 		long temp;
+		temp = Double.doubleToLongBits(bearing);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
 		temp = Double.doubleToLongBits(distance);
 		result = prime * result + (int) (temp ^ (temp >>> 32));
 		return result;
@@ -38,6 +46,8 @@ public class EnemyState implements IState {
 		if (getClass() != obj.getClass())
 			return false;
 		EnemyState other = (EnemyState) obj;
+		if (Double.doubleToLongBits(bearing) != Double.doubleToLongBits(other.bearing))
+			return false;
 		if (Double.doubleToLongBits(distance) != Double.doubleToLongBits(other.distance))
 			return false;
 		return true;
@@ -45,7 +55,7 @@ public class EnemyState implements IState {
 
 	@Override
 	public ActionList getActionList() {
-		ActionList actionList = new ActionList(new EnemyState(0));
+		ActionList actionList = new ActionList(new EnemyState(0, 0));
 		for (double shotPower : ShotAction.AVAILABLE_SHOT_POWERS) {
 			actionList.add(new ShotAction(shotPower));
 		}
@@ -53,18 +63,18 @@ public class EnemyState implements IState {
 	}
 
 	@Override
-	public IState copy() {
-		return new EnemyState(distance);
+	public EnemyState copy() {
+		return new EnemyState(distance, bearing);
 	}
 
 	@Override
 	public int nnCodingSize() {
-		return 1;
+		return 2;
 	}
 
 	@Override
 	public double[] nnCoding() {
-		return new double[] { distance };
+		return new double[] { distance, bearing };
 	}
 
 	@Override
