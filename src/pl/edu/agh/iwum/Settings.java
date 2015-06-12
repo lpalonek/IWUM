@@ -5,8 +5,8 @@ import robocode.BulletMissedEvent;
 
 public class Settings {
 
-	public static final int NUMBER_OF_LEARNING_ROUNDS = 100;
-	public static final int NUMBER_OF_ROUNDS = 200;
+	public static final int NUMBER_OF_LEARNING_ROUNDS = 250;
+	public static final int NUMBER_OF_ROUNDS = 500;
 
 	private static Settings instance = null;
 
@@ -18,11 +18,11 @@ public class Settings {
 	}
 
 	public double getReward(BulletHitEvent e) {
-		return logRewardAndReturnIt("bullet hit", e.getBullet().getPower() * 2);
+		return logRewardAndReturnIt("bullet hit", Math.pow(e.getBullet().getPower(), 3));
 	}
 
 	public double getReward(BulletMissedEvent e) {
-		return logRewardAndReturnIt("bullet miss", -e.getBullet().getPower() * 2);
+		return logRewardAndReturnIt("bullet miss", Math.pow(-e.getBullet().getPower(), 3));
 	}
 
 	public double getRewardForNotShooting() {

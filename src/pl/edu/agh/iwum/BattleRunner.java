@@ -28,7 +28,7 @@ public class BattleRunner {
 
 	private static final String PACKAGE_PATH = "pl/edu/agh/iwum/";
 
-	private static final String SOURCE_DIRECTORY_PREFIX = "out/production/IWUM/"; // "bin/";
+	private static final String SOURCE_DIRECTORY_PREFIX = "out/production/IWUM/";// "bin/"
 
 	private static final String TARGET_DIRECTORY_PREFIX = "out/robots/";
 
@@ -139,9 +139,11 @@ class BattleObserver extends BattleAdaptor {
 		double totalPiqle = snapshots[0].getTotalScore();
 		double totalDummy = snapshots[1].getTotalScore();
 		StringBuilder sb = new StringBuilder();
-		sb.append(event.getRound() + ",");
-		sb.append(totalPiqle - prevPiqle + ",");
-		sb.append(totalDummy - prevDummy);
+		sb.append(event.getRound());
+		sb.append(",\t");
+		sb.append(roundTo2DecimalPlaces(totalPiqle - prevPiqle));
+		sb.append(",\t");
+		sb.append(roundTo2DecimalPlaces(totalDummy - prevDummy));
 		if (event.getRound() < Settings.NUMBER_OF_LEARNING_ROUNDS) {
 			PointsStatistics.getInstance().addLearningPoints(totalPiqle - prevPiqle);
 		} else {
@@ -152,5 +154,9 @@ class BattleObserver extends BattleAdaptor {
 		prevDummy = totalDummy;
 		// list.forEach(elem -> System.out.println(elem.getTotalScore()));
 		System.out.println(sb.toString());
+	}
+
+	private double roundTo2DecimalPlaces(double value) {
+		return Math.round(value * 100) / 100;
 	}
 }

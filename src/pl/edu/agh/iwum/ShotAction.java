@@ -10,7 +10,7 @@ public class ShotAction implements IAction {
 
 	private static final long serialVersionUID = -7692341571501280588L;
 
-	public static double[] AVAILABLE_SHOT_POWERS = new double[] { 0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0 };
+	public static double[] AVAILABLE_SHOT_POWERS = new double[] { 0.0, /*0.5, 1.0, 1.5, 2.0, 2.5,*/ 3.0 };
 
 	private static Random random = new Random();
 
