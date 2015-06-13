@@ -4,17 +4,11 @@ import static robocode.util.Utils.normalRelativeAngleDegrees;
 
 import java.awt.Color;
 
-import robocode.BattleEndedEvent;
-import robocode.Bullet;
-import robocode.BulletHitBulletEvent;
-import robocode.BulletHitEvent;
-import robocode.BulletMissedEvent;
-import robocode.Robot;
-import robocode.ScannedRobotEvent;
+import robocode.*;
 import environment.IAction;
 import environment.IState;
 
-public class PiqleBot extends Robot {
+public class PiqleBot extends AdvancedRobot{
 
     private static StateActionPairMap<Bullet> shots = new StateActionPairMap<Bullet>();
     private static int currentRound = 0;
@@ -46,6 +40,7 @@ public class PiqleBot extends Robot {
                 gunTurnAmount = -10;
             }
         }
+
     }
 
     private void initializeParameters() {
@@ -123,10 +118,10 @@ public class PiqleBot extends Robot {
 
     private void learnNoShotAction(ShotAction action) {
         double reward;
-        if (numberOfSkippedShotsInRow < shots.size()) {
+        if ( numberOfSkippedShotsInRow < this.getRoundNum() && numberOfSkippedShotsInRow < 120) {
             reward = Settings.getInstance().getRewardForNotShooting();
         } else {
-            reward = -1;
+            reward = -this.getRoundNum()*2;
         }
         QLearning.getInstance().learn(getEnemyBotState(), getEnemyBotState(), action, reward);
     }
@@ -149,7 +144,7 @@ public class PiqleBot extends Robot {
     }
 
     private EnemyState getEnemyBotState(ScannedRobotEvent e) {
-        EnemyState currentEnemyState = new EnemyState(e.getDistance(), e.getBearing(), e.getHeading(), e.getVelocity());
+        EnemyState currentEnemyState = new EnemyState(e.getDistance(), e.getBearingRadians(), e.getHeadingRadians(), e.getVelocity());
         return currentEnemyState;
     }
 

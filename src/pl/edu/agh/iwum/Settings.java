@@ -26,7 +26,7 @@ public class Settings {
 	}
 
 	public double getRewardForNotShooting() {
-		return logRewardAndReturnIt("not shooting", 1);
+		return logRewardAndReturnIt("not shooting", 0);
 	}
 
 	private double logRewardAndReturnIt(String forWhat, double reward) {

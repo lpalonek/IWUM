@@ -63,8 +63,8 @@ public class BattleRunner {
 
 		RobotSetup[] arr = initializeRobots();
 		BattleSpecification battleSpec = new BattleSpecification(battlefield, numberOfRounds, 50, 0.1, 50, true,
-//				selectedRobots, arr);
-				selectedRobots);
+				selectedRobots, arr);
+//				selectedRobots);
 
 		engine.runBattle(battleSpec, true); // waits till the battle finishes
 

@@ -9,76 +9,79 @@ package pl.edu.agh.iwum;
 
 
 import robocode.HitByBulletEvent;
-import robocode.HitRobotEvent;
 import robocode.Robot;
 import robocode.ScannedRobotEvent;
-import static robocode.util.Utils.normalRelativeAngleDegrees;
 
 import java.awt.*;
 
 
 /**
- * Fire - a sample robot by Mathew Nelson, and maintained.
+ * PaintingRobot - a sample robot that demonstrates the onPaint() and
+ * getGraphics() methods.
+ * Also demonstrate feature of debugging properties on RobotDialog
  * <p/>
- * Sits still. Spins gun around. Moves when hit.
+ * Moves in a seesaw motion, and spins the gun around at each end.
+ * When painting is enabled for this robot, a red circle will be painted
+ * around this robot.
  *
- * @author Mathew A. Nelson (original)
- * @author Flemming N. Larsen (contributor)
+ * @author Stefan Westen (original SGSample)
+ * @author Pavel Savara (contributor)
  */
 public class DummyBot extends Robot {
-    int dist = 50; // distance to move when we're hit
 
     /**
-     * run:  Fire's main run function
+     * PaintingRobot's run method - Seesaw
      */
     public void run() {
-        // Set colors
-        setBodyColor(Color.orange);
-        setGunColor(Color.orange);
-        setRadarColor(Color.red);
-        setScanColor(Color.red);
-        setBulletColor(Color.red);
-
-        // Spin the gun around slowly... forever
         while (true) {
-            turnGunRight(5);
+            ahead(100);
+            turnGunRight(360);
+            back(100);
+            turnGunRight(360);
         }
     }
 
     /**
-     * onScannedRobot:  Fire!
+     * Fire when we see a robot
      */
     public void onScannedRobot(ScannedRobotEvent e) {
-        // If the other robot is close by, and we have plenty of life,
-        // fire hard!
-        if (e.getDistance() < 50 && getEnergy() > 50) {
-            fire(3);
-        } // otherwise, fire 1.
-        else {
-            fire(1);
-        }
-        // Call scan again, before we turn the gun
-        scan();
+        // demonstrate feature of debugging properties on RobotDialog
+        setDebugProperty("lastScannedRobot", e.getName() + " at " + e.getBearing() + " degrees at time " + getTime());
+
+        fire(1);
     }
 
     /**
-     * onHitByBullet:  Turn perpendicular to the bullet, and move a bit.
+     * We were hit!  Turn perpendicular to the bullet,
+     * so our seesaw might avoid a future shot.
+     * In addition, draw orange circles where we were hit.
      */
     public void onHitByBullet(HitByBulletEvent e) {
-        turnRight(normalRelativeAngleDegrees(90 - (getHeading() - e.getHeading())));
+        // demonstrate feature of debugging properties on RobotDialog
+        setDebugProperty("lastHitBy", e.getName() + " with power of bullet " + e.getPower() + " at time " + getTime());
 
-        ahead(dist);
-        dist *= -1;
-        scan();
+        // show how to remove debugging property
+        setDebugProperty("lastScannedRobot", null);
+
+        // gebugging by painting to battle view
+        Graphics2D g = getGraphics();
+
+        g.setColor(Color.orange);
+        g.drawOval((int) (getX() - 55), (int) (getY() - 55), 110, 110);
+        g.drawOval((int) (getX() - 56), (int) (getY() - 56), 112, 112);
+        g.drawOval((int) (getX() - 59), (int) (getY() - 59), 118, 118);
+        g.drawOval((int) (getX() - 60), (int) (getY() - 60), 120, 120);
+
+        turnLeft(90 - e.getBearing());
     }
 
     /**
-     * onHitRobot:  Aim at it.  Fire Hard!
+     * Paint a red circle around our PaintingRobot
      */
-    public void onHitRobot(HitRobotEvent e) {
-        double turnGunAmt = normalRelativeAngleDegrees(e.getBearing() + getHeading() - getGunHeading());
-
-        turnGunRight(turnGunAmt);
-        fire(3);
+    public void onPaint(Graphics2D g) {
+        g.setColor(Color.red);
+        g.drawOval((int) (getX() - 50), (int) (getY() - 50), 100, 100);
+        g.setColor(new Color(0, 0xFF, 0, 30));
+        g.fillOval((int) (getX() - 60), (int) (getY() - 60), 120, 120);
     }
 }
