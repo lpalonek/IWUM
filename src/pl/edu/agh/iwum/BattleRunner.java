@@ -59,24 +59,17 @@ public class BattleRunner {
 		BattlefieldSpecification battlefield = new BattlefieldSpecification(800, 600); // 800x600
 		RobotSpecification[] selectedRobots = engine.getLocalRepository("pl.edu.agh.iwum.PiqleBot*,"
 				+ "pl.edu.agh.iwum.DummyBot*");
-		RobotSetup robotSetup1 = new RobotSetup(150.0, 150.0, 1.0);
-		RobotSetup robotSetup2 = new RobotSetup(650.0, 350.0, 1.0);
-		RobotSetup[] arr = new RobotSetup[2];
-		arr[0] = robotSetup1;
-		arr[1] = robotSetup2;
 
-		// BattleSpecification battleSpec = new
-		// BattleSpecification(numberOfRounds, battlefield, selectedRobots);
+
+		RobotSetup[] arr = initializeRobots();
 		BattleSpecification battleSpec = new BattleSpecification(battlefield, numberOfRounds, 50, 0.1, 50, true,
-				robots, arr);
+//				selectedRobots, arr);
+				selectedRobots);
 
-		// Run our specified battle and let it run till it is over
 		engine.runBattle(battleSpec, true); // waits till the battle finishes
 
-		// Cleanup our RobocodeEngine
 		engine.close();
 
-		// Make sure that the Java VM is shut down properly
 		System.exit(0);
 	}
 
@@ -91,7 +84,15 @@ public class BattleRunner {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
 
+	private static RobotSetup[] initializeRobots(){
+		RobotSetup robotSetup1 = new RobotSetup(150.0, 150.0, 1.0);
+		RobotSetup robotSetup2 = new RobotSetup(650.0, 350.0, 1.0);
+		RobotSetup[] robotsArray = new RobotSetup[2];
+		robotsArray[0] = robotSetup1;
+		robotsArray[1] = robotSetup2;
+		return robotsArray;
 	}
 }
 
@@ -144,6 +145,8 @@ class BattleObserver extends BattleAdaptor {
 		sb.append(roundTo2DecimalPlaces(totalPiqle - prevPiqle));
 		sb.append(",\t");
 		sb.append(roundTo2DecimalPlaces(totalDummy - prevDummy));
+		sb.append(",\t");
+		sb.append(ShotStatistics.getInstance().getRoundAccuracy());
 		if (event.getRound() < Settings.NUMBER_OF_LEARNING_ROUNDS) {
 			PointsStatistics.getInstance().addLearningPoints(totalPiqle - prevPiqle);
 		} else {

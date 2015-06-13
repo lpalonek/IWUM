@@ -1,77 +1,84 @@
+/*******************************************************************************
+ * Copyright (c) 2001-2014 Mathew A. Nelson and Robocode contributors
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://robocode.sourceforge.net/license/epl-v10.html
+ *******************************************************************************/
 package pl.edu.agh.iwum;
 
-/**
- * Created by lpalonek on 08/06/15.
- */
 
-//import java.awt.Color;
-
-// API help : http://robocode.sourceforge.net/docs/robocode/robocode/Robot.html
-
-import robocode.*;
+import robocode.HitByBulletEvent;
+import robocode.HitRobotEvent;
+import robocode.Robot;
+import robocode.ScannedRobotEvent;
+import static robocode.util.Utils.normalRelativeAngleDegrees;
 
 import java.awt.*;
 
+
 /**
- * Projekt - a robot by (your name here)
+ * Fire - a sample robot by Mathew Nelson, and maintained.
+ * <p/>
+ * Sits still. Spins gun around. Moves when hit.
+ *
+ * @author Mathew A. Nelson (original)
+ * @author Flemming N. Larsen (contributor)
  */
-public class DummyBot
-        extends AdvancedRobot
-{
+public class DummyBot extends Robot {
+    int dist = 50; // distance to move when we're hit
+
     /**
-     * run: Projekt's default behavior
+     * run:  Fire's main run function
      */
     public void run() {
+        // Set colors
+        setBodyColor(Color.orange);
+        setGunColor(Color.orange);
+        setRadarColor(Color.red);
+        setScanColor(Color.red);
+        setBulletColor(Color.red);
+
+        // Spin the gun around slowly... forever
         while (true) {
-            ahead(100);
-            turnGunRight(360);
-            back(100);
-            turnGunRight(360);
+            turnGunRight(5);
         }
     }
 
     /**
-     * Fire when we see a robot
+     * onScannedRobot:  Fire!
      */
     public void onScannedRobot(ScannedRobotEvent e) {
-        // demonstrate feature of debugging properties on RobotDialog
-        setDebugProperty("lastScannedRobot", e.getName() + " at " + e.getBearing() + " degrees at time " + getTime());
-
-        fire(1);
+        // If the other robot is close by, and we have plenty of life,
+        // fire hard!
+        if (e.getDistance() < 50 && getEnergy() > 50) {
+            fire(3);
+        } // otherwise, fire 1.
+        else {
+            fire(1);
+        }
+        // Call scan again, before we turn the gun
+        scan();
     }
 
     /**
-     * We were hit!  Turn perpendicular to the bullet,
-     * so our seesaw might avoid a future shot.
-     * In addition, draw orange circles where we were hit.
+     * onHitByBullet:  Turn perpendicular to the bullet, and move a bit.
      */
     public void onHitByBullet(HitByBulletEvent e) {
-        // demonstrate feature of debugging properties on RobotDialog
-        setDebugProperty("lastHitBy", e.getName() + " with power of bullet " + e.getPower() + " at time " + getTime());
+        turnRight(normalRelativeAngleDegrees(90 - (getHeading() - e.getHeading())));
 
-        // show how to remove debugging property
-        setDebugProperty("lastScannedRobot", null);
-
-        // gebugging by painting to battle view
-        Graphics2D g = getGraphics();
-
-        g.setColor(Color.orange);
-        g.drawOval((int) (getX() - 55), (int) (getY() - 55), 110, 110);
-        g.drawOval((int) (getX() - 56), (int) (getY() - 56), 112, 112);
-        g.drawOval((int) (getX() - 59), (int) (getY() - 59), 118, 118);
-        g.drawOval((int) (getX() - 60), (int) (getY() - 60), 120, 120);
-
-        turnLeft(90 - e.getBearing());
+        ahead(dist);
+        dist *= -1;
+        scan();
     }
 
     /**
-     * Paint a red circle around our PaintingRobot
+     * onHitRobot:  Aim at it.  Fire Hard!
      */
-    public void onPaint(Graphics2D g) {
-        g.setColor(Color.red);
-        g.drawOval((int) (getX() - 50), (int) (getY() - 50), 100, 100);
-        g.setColor(new Color(0, 0xFF, 0, 30));
-        g.fillOval((int) (getX() - 60), (int) (getY() - 60), 120, 120);
+    public void onHitRobot(HitRobotEvent e) {
+        double turnGunAmt = normalRelativeAngleDegrees(e.getBearing() + getHeading() - getGunHeading());
+
+        turnGunRight(turnGunAmt);
+        fire(3);
     }
 }
-

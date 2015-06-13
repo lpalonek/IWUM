@@ -5,16 +5,23 @@ import environment.IAction;
 import environment.IEnvironment;
 import environment.IState;
 
+import java.util.Objects;
+
 public class EnemyState implements IState {
 
 	private static final long serialVersionUID = -3643819132494631724L;
 
 	private double distance;
 	private double bearing;
+	private double heading;
+	private double velocity;
 
-	public EnemyState(double distance, double bearing) {
+	public EnemyState(double distance, double bearing,
+					  double heading, double velocity) {
 		this.distance = Math.round(distance);
 		this.bearing = Math.round(bearing);
+		this.heading = Math.round(heading);
+		this.velocity = Math.round(velocity);
 	}
 
 	public double getDistance() {
@@ -27,14 +34,7 @@ public class EnemyState implements IState {
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		long temp;
-		temp = Double.doubleToLongBits(bearing);
-		result = prime * result + (int) (temp ^ (temp >>> 32));
-		temp = Double.doubleToLongBits(distance);
-		result = prime * result + (int) (temp ^ (temp >>> 32));
-		return result;
+		return Objects.hash(distance, bearing, heading, velocity);
 	}
 
 	@Override
@@ -55,7 +55,7 @@ public class EnemyState implements IState {
 
 	@Override
 	public ActionList getActionList() {
-		ActionList actionList = new ActionList(new EnemyState(0, 0));
+		ActionList actionList = new ActionList(new EnemyState(0, 0, 0, 0));
 		for (double shotPower : ShotAction.AVAILABLE_SHOT_POWERS) {
 			actionList.add(new ShotAction(shotPower));
 		}
@@ -64,17 +64,17 @@ public class EnemyState implements IState {
 
 	@Override
 	public EnemyState copy() {
-		return new EnemyState(distance, bearing);
+		return new EnemyState(distance, bearing, heading, velocity);
 	}
 
 	@Override
 	public int nnCodingSize() {
-		return 2;
+		return 4;
 	}
 
 	@Override
 	public double[] nnCoding() {
-		return new double[] { distance, bearing };
+		return new double[] { distance, bearing, heading, velocity };
 	}
 
 	@Override

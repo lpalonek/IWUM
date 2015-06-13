@@ -15,12 +15,17 @@ public class ShotStatistics {
 	private int numberOfLearningAccurateShots;
 	private int numberOfLearnedShots;
 	private int numberOfLearnedAccurateShots;
+	private int numberOfShotsRound;
+	private int numberOfAccuredShotsRound;
+
 
 	public ShotStatistics() {
 		numberOfLearningShots = 0;
 		numberOfLearningAccurateShots = 0;
 		numberOfLearnedShots = 0;
 		numberOfLearnedAccurateShots = 0;
+		numberOfShotsRound = 0;
+		numberOfAccuredShotsRound = 0;
 	}
 
 	public String[] getLogStrings() {
@@ -39,20 +44,25 @@ public class ShotStatistics {
 	public void learningShotHit() {
 		++numberOfLearningShots;
 		++numberOfLearningAccurateShots;
+		increaseShotRoundHit();
 	}
 
 	public void learningShotMiss() {
 		++numberOfLearningShots;
+		increaseShotRoundMiss();
 	}
 
 	public void learnedShotHit() {
 		++numberOfLearnedShots;
 		++numberOfLearnedAccurateShots;
+		increaseShotRoundHit();
 	}
 
 	public void learnedShotMiss() {
 		++numberOfLearnedShots;
+		increaseShotRoundMiss();
 	}
+
 
 	public double getLearningAccuracy() {
 		return (1.0 * numberOfLearningAccurateShots) / numberOfLearningShots;
@@ -60,6 +70,21 @@ public class ShotStatistics {
 
 	public double getLearnedAccuracy() {
 		return (1.0 * numberOfLearnedAccurateShots) / numberOfLearnedShots;
+	}
+
+	public String getRoundAccuracy(){
+		String accuracy = String.valueOf(toPercents(1.0 * numberOfAccuredShotsRound / numberOfShotsRound));
+		numberOfAccuredShotsRound = numberOfShotsRound = 0;
+		return accuracy;
+	}
+
+	private void increaseShotRoundHit(){
+		++numberOfShotsRound;
+		++numberOfAccuredShotsRound;
+	}
+
+	private void increaseShotRoundMiss(){
+		++numberOfShotsRound;
 	}
 
 	private double getPercentageGain() {

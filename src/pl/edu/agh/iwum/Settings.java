@@ -5,7 +5,7 @@ import robocode.BulletMissedEvent;
 
 public class Settings {
 
-	public static final int NUMBER_OF_LEARNING_ROUNDS = 250;
+	public static final int NUMBER_OF_LEARNING_ROUNDS = 0;
 	public static final int NUMBER_OF_ROUNDS = 500;
 
 	private static Settings instance = null;

@@ -31,4 +31,8 @@ public class StateActionPairMap<T extends Object> {
 		map.clear();
 	}
 
+	public int size(){
+		return map.size();
+	}
+
 }
